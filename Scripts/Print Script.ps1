@@ -2,7 +2,7 @@
 
 $printers = Get-CimInstance -Class Win32_Printer -Property Name | select Name, Default
 
-$printer1 = "*FollowMe Sharp*"
+$printer1 = "*PRINTER NAME*"
 
 # Set booleans as to if certain printers are connected.
 
@@ -10,21 +10,21 @@ foreach($printer in $printers) {
 
     if ($printer -like $printer1) {
 
-        if ($printer -like "*TF-DC.teamfostering.co.uk*") {
+        if ($printer -like "*PRINT SERVER FQDN*") {
 
-            (New-Object -ComObject WScript.Network).SetDefaultPrinter('\\TF-DC.teamfostering.com\TF FollowMe Sharp')
+            (New-Object -ComObject WScript.Network).SetDefaultPrinter('FQDN\PRINTER')
 
-        } elseif ($printer -like "*TF-DC*") {
+        } elseif ($printer -like "*PRINT SERVER*") {
 
-            (New-Object -ComObject WScript.Network).SetDefaultPrinter('\\TF-DC\TF FollowMe Sharp')
+            (New-Object -ComObject WScript.Network).SetDefaultPrinter('PRINT SERVER\PRINTER')
 
         }
 
     } else {
 
-        Add-Printer -ConnectionName "\\TF-DC.teamfostering.com\TF FollowMe Sharp"
+        Add-Printer -ConnectionName "FQDN\PRINTER"
 
-        (New-Object -ComObject WScript.Network).SetDefaultPrinter('\\TF-DC.teamfostering.com\TF FollowMe Sharp')
+        (New-Object -ComObject WScript.Network).SetDefaultPrinter('FQDN\PRINTER')
     }
 
 }
