@@ -4,18 +4,18 @@
 $vmList = Get-VM | Select-Object Name,State
 
 #Text file list of VMs to be checking
-$vmChecks = "C:\Users\Oneadmin\Desktop\VM Checks.txt"
+$vmChecks = "FILEPATH"
 
 #Set email and use stored encrypted credentials to send out alert emails
-$email = "datacentre@oneits.co.uk"
-$password = Get-Content "C:\Users\Oneadmin\Documents\encryptedpwd.txt" | ConvertTo-SecureString
+$email = "EMAIL ADDRESS"
+$password = Get-Content "GET STORED PASSWORD" | ConvertTo-SecureString
 $credential = New-Object System.Management.Automation.PSCredential($email,$password)
 
 #Get current date for logging
 $date = Get-Date -Format "hh:mm:ss dd/MM/yy"
 
 #Set discord webhook URI
-$hookURL = "https://discord.com/api/webhooks/1011607591320813649/jC_yVWfj_TqlcyNsunget3CKTdYRh7ZPr5uLCNJwreJBMNyzT6udxJOcG9TJ0UapiKUD"
+$hookURL = "DISCORD WEBHOOK"
 
 
 #Loop for each VM found on the list of VMs created earlier
@@ -37,7 +37,7 @@ ForEach($vm in $vmList) {
                 $unique = Get-Date -UFormat %s
 
                 #Send out email using credentials and variables 
-                Send-MailMessage -From 'TJ VM Checks <datacentre@oneits.co.uk>' -To 'engineers@oneits.co.uk' -Subject "VM $vmanmenospace down on TJ" -Body "The server $vmanmenospace is offline on TJ, server will restart in 5 minutes. To stop this clear the contents of C:\Logs\$($vm.name)-$unique.txt on TJ." -SmtpServer 'mail.oneits.co.uk' -Credential $credential
+                Send-MailMessage -From 'VM Checks <EMAIL ADDRESS>' -To 'EMAIL ADDRESS' -Subject "VM $vmanmenospace down on HV" -Body "The server $vmanmenospace is offline on HV, server will restart in 5 minutes. To stop this clear the contents of FILEPATH." -SmtpServer 'SMTP ADDRESS' -Credential $credential
 
                 #Add a line in the log file to state that the VM has been powered off.
                 Add-Content -Path "C:\Logs\VM Check Script.txt" -value "$date : $($vm.Name) has been powered off!`r`n"
@@ -45,8 +45,8 @@ ForEach($vm in $vmList) {
                 #Create Discord Webhook message using variables
                 $hookContent = @{
 
-                    "username" = "TJ VM Status"
-                    "content" = "The server $vmanmenospace is offline on TJ, server will restart in 5 minutes. `r`n`r`nTo stop this clear the contents of C:\Logs\$($vm.name)-$unique.txt on TJ."
+                    "username" = "HV VM Status"
+                    "content" = "The server $vmanmenospace is offline on VM, server will restart in 5 minutes. `r`n`r`nTo stop this clear the contents of FILE PATH."
 
                 }
 
@@ -71,19 +71,19 @@ ForEach($vm in $vmList) {
                     Start-VM -Name $VMToStart -WarningVariable warning
 
                     #Add log file to state VM is now starting
-                    Add-Content -Path "C:\Logs\VM Check Script.txt" -value "$date : Starting $($vm.Name) after it has been powered off!`r`n"
+                    Add-Content -Path "FILEPATH" -value "$date : Starting $($vm.Name) after it has been powered off!`r`n"
 
                     #Delete file from list of VMs to start
-                    Remove-Item -Path "C:\Logs\$($vm.name)-$unique.txt"
+                    Remove-Item -Path "FILEPATH"
 
                     #If a warning appears e.g. missing disk or VM already running send out an email and discord message
                     if($warning){
 
-                        Send-MailMessage -From "TJ VM Checks <datacentre@oneits.co.uk>" -To "engineers@oneits.co.uk" -Subject "Failed to start $vmanmenospace" -Body "The VM restart script failed to start $vmanmenospace. The failure reason is: $warning" -SmtpServer "mail.oneits.co.uk" -Credential $credential
+                        Send-MailMessage -From "HV VM Checks <EMAIL ADDRESS>" -To "EMAIL ADDRESS" -Subject "Failed to start $vmanmenospace" -Body "The VM restart script failed to start $vmanmenospace. The failure reason is: $warning" -SmtpServer "SMTP ADDRESS" -Credential $credential
 
                         $hookContent2 = @{
 
-                            "username" = "TJ VM Status"
+                            "username" = "HV VM Status"
                             "content" = "The server $vmanmenospace failed to start. `r`n`r`nThe failure reason is: $warning"
 
                         }
